@@ -1,5 +1,5 @@
 const { User } = require("../models");
-
+const Mail = require("../services/MailService");
 class SessionController {
   async store(req, res) {
     const { email, password } = req.body;
@@ -10,6 +10,13 @@ class SessionController {
 
     if (!(await user.checkPassword(password)))
       return res.status(401).json({ message: "User not Found" });
+
+    await Mail.send({
+      from: "Alfiado ngana <alfiado@ngana.com>",
+      to: `${user.name} <${user.email}>`,
+      subject: "Novo acesso em sua conta",
+      text: "Fala dev, registamos um novo acesso em sua conta"
+    });
 
     return res.status(200).json({
       token: await user.generateToken()
