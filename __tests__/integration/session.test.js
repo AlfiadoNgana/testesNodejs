@@ -78,4 +78,12 @@ describe("Authentication", () => {
 
     expect(response.status).toBe(401);
   });
+
+  it("Should not be able to access private routes with invalid token", async () => {
+    const response = await request(app)
+      .get("/dashboard")
+      .set("Authorization", `bearer 123456`);
+
+    expect(response.status).toBe(401);
+  });
 });
