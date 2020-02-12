@@ -11,7 +11,9 @@ class SessionController {
     if (!(await user.checkPassword(password)))
       return res.status(401).json({ message: "User not Found" });
 
-    return res.status(200).send();
+    return res.status(200).json({
+      token: await user.generateToken()
+    });
   }
 }
 

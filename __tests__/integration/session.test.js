@@ -41,4 +41,41 @@ describe("Authentication", () => {
 
     expect(response.status).toBe(401);
   });
+
+  it("Should return a jwt token when authenticated", async () => {
+    const user = await User.create({
+      name: "constantino",
+      email: "ngana@ngana.com",
+      password: "123456"
+    });
+
+    const response = await request(app)
+      .post("/sessions")
+      .send({
+        email: user.email,
+        password: "123456"
+      });
+
+    expect(response.body).toHaveProperty("token");
+  });
+
+  it("shoud be able to access private routes when authenticated", async () => {
+    const user = await User.create({
+      name: "constantino",
+      email: "ngana@ngana.com",
+      password: "123456"
+    });
+
+    const response = await request(app)
+      .get("/dashboard")
+      .set("Authorization", `Bearer ${user.generateToken()}`);
+
+    expect(response.status).toBe(200);
+  });
+
+  it("Should not be able to access private routes when not authenticated", async () => {
+    const response = await request(app).get("/dashboard");
+
+    expect(response.status).toBe(401);
+  });
 });
